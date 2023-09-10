@@ -8,7 +8,11 @@ import net.mamoe.mirai.event.GlobalEventChannel;
 import net.mamoe.mirai.event.events.GroupMessageEvent;
 import net.mamoe.mirai.event.events.MessageEvent;
 import net.mamoe.mirai.message.data.At;
+import org.jetbrains.annotations.NotNull;
 
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.Random;
 
 public final class MuteMe extends JavaPlugin {
@@ -32,20 +36,24 @@ public final class MuteMe extends JavaPlugin {
             return false;
         });
         eventChannel.subscribeAlways(GroupMessageEvent.class, g -> {
-            if (g.getMessage().toString().equals("muteme")) {
+            if (g.getMessage().contentToString().equals("muteme")) {
                 int muteTime = Config.INSTANCE.getMinTime() + new Random().nextInt(Config.INSTANCE.getMaxTime());
-                getLogger().info("申请人：" + g.getSender().toString() + ",禁言时长：" + muteTime + "s");
                 g.getSender().mute(muteTime);
-                g.getGroup().sendMessage("禁言成功！\n申请人：" + g.getSender().toString() + "\n禁言时长：" + muteTime + "s");
+                String message = "被禁名称:" + g.getSender() + "\n被禁时间:" + muteTime + "秒\n解禁时间:" + formatDate(System.currentTimeMillis() + muteTime);
+                getLogger().info(message);
+                g.getGroup().sendMessage(message);
             }
-            if (g.getMessage().toString().equals("我好了")) {
-                g.getSender().mute(10);
-//                g.getGroup().sendMessage()
+            if (g.getMessage().contentToString().equals("我好了")) {
+                g.getSender().mute(30);
+                g.getGroup().sendMessage("不许好，憋回去！");
             }
         });
-
-
     }
 
-
+    @NotNull("1970年01月01日00时00分00秒")
+    String formatDate(long timeStamp) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy年MM月dd日HH时mm分ss秒");
+        Instant instant = Instant.ofEpochMilli(timeStamp);
+        return formatter.format(instant.atZone(ZoneId.systemDefault()));
+    }
 }
