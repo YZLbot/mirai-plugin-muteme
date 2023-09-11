@@ -19,7 +19,7 @@ public final class MuteMe extends JavaPlugin {
     public static final MuteMe INSTANCE = new MuteMe();
 
     private MuteMe() {
-        super(new JvmPluginDescriptionBuilder("takeoff.muteme", "0.1.0")
+        super(new JvmPluginDescriptionBuilder("takeoff.muteme", "0.1.1")
                 .name("MuteMe")
                 .author("takeoff0518")
                 .build());
@@ -36,23 +36,24 @@ public final class MuteMe extends JavaPlugin {
             return false;
         });
         eventChannel.subscribeAlways(GroupMessageEvent.class, g -> {
-            if (g.getMessage().contentToString().equals("muteme")) {
+            if (g.getMessage().contentToString().contains("muteme")) {
                 try {
                     int muteTime = Config.INSTANCE.getMinTime() + new Random().nextInt(Config.INSTANCE.getMaxTime());
                     g.getSender().mute(muteTime);
-                    String message = "被禁名称:" + g.getSender().getNameCard() + "，被禁时间:" + muteTime + "秒，解禁时间:" + formatDate(System.currentTimeMillis() + (long) muteTime);
-                    getLogger().info(message);
+                    String message = "被禁名称:" + g.getSender().getNick() + "\n被禁时间:" + muteTime + "秒\n解禁时间:" + formatDate(System.currentTimeMillis() + ((long) muteTime * 1000));
                     g.getGroup().sendMessage(message);
                 } catch (Exception exception) {
-                    g.getGroup().sendMessage("可惜我不能禁言呢~");
+                    g.getGroup().sendMessage("出现了一点意外呢~");
+                    exception.printStackTrace();
                 }
             }
-            if (g.getMessage().contentToString().equals("我好了")) {
+            if (g.getMessage().contentToString().contains("我好了")) {
                 try {
                     g.getSender().mute(30);
                     g.getGroup().sendMessage("不许好，憋回去！");
                 } catch (Exception exception) {
-                    g.getGroup().sendMessage("可惜我不能禁言呢~");
+                    g.getGroup().sendMessage("出现了一点意外呢~");
+                    exception.printStackTrace();
                 }
             }
         });
