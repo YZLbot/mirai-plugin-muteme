@@ -28,7 +28,7 @@ public final class MuteMe extends JavaPlugin {
     @Override
     public void onEnable() {
         this.reloadPluginConfig(Config.INSTANCE);
-        getLogger().info("muteme load successful!");
+        getLogger().info("MuteMe 已成功加载！GitHub：https://github.com/Takeoff0518/mirai-plugin-muteme/");
         EventChannel<Event> eventChannel = GlobalEventChannel.INSTANCE.parentScope(this).filter(e -> {
             if (e instanceof MessageEvent) {
                 return ((MessageEvent) e).getMessage().contains(At.Key);
@@ -37,15 +37,23 @@ public final class MuteMe extends JavaPlugin {
         });
         eventChannel.subscribeAlways(GroupMessageEvent.class, g -> {
             if (g.getMessage().contentToString().equals("muteme")) {
-                int muteTime = Config.INSTANCE.getMinTime() + new Random().nextInt(Config.INSTANCE.getMaxTime());
-                g.getSender().mute(muteTime);
-                String message = "被禁名称:" + g.getSender() + "\n被禁时间:" + muteTime + "秒\n解禁时间:" + formatDate(System.currentTimeMillis() + muteTime);
-                getLogger().info(message);
-                g.getGroup().sendMessage(message);
+                try {
+                    int muteTime = Config.INSTANCE.getMinTime() + new Random().nextInt(Config.INSTANCE.getMaxTime());
+                    g.getSender().mute(muteTime);
+                    String message = "被禁名称:" + g.getSender().getNameCard() + "，被禁时间:" + muteTime + "秒，解禁时间:" + formatDate(System.currentTimeMillis() + (long) muteTime);
+                    getLogger().info(message);
+                    g.getGroup().sendMessage(message);
+                } catch (Exception exception) {
+                    g.getGroup().sendMessage("可惜我不能禁言呢~");
+                }
             }
             if (g.getMessage().contentToString().equals("我好了")) {
-                g.getSender().mute(30);
-                g.getGroup().sendMessage("不许好，憋回去！");
+                try {
+                    g.getSender().mute(30);
+                    g.getGroup().sendMessage("不许好，憋回去！");
+                } catch (Exception exception) {
+                    g.getGroup().sendMessage("可惜我不能禁言呢~");
+                }
             }
         });
     }
