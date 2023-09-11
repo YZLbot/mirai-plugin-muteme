@@ -6,16 +6,12 @@
     <img src="https://img.shields.io/github/release/Takeoff0518/mirai-plugin-muteme" alt="latest version" />
   </a>
 
------
-
 ## 使用
 
 - 在群内发送含 `muteme` 的消息，即可禁言自己随机时长（默认 15~600 秒，请修改 `config.yml`）
 - 在群里发送含 `我好了` 的消息，会获得一个 30 秒的禁言
 
 注意：机器人群内权限需要大于申请人权限
-
------
 
 ## 配置文件
 
