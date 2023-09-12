@@ -19,7 +19,7 @@ public final class MuteMe extends JavaPlugin {
     public static final MuteMe INSTANCE = new MuteMe();
 
     private MuteMe() {
-        super(new JvmPluginDescriptionBuilder("takeoff.muteme", "0.1.1")
+        super(new JvmPluginDescriptionBuilder("takeoff.muteme", "0.1.2")
                 .name("MuteMe")
                 .author("takeoff0518")
                 .build());
@@ -37,23 +37,21 @@ public final class MuteMe extends JavaPlugin {
         });
         eventChannel.subscribeAlways(GroupMessageEvent.class, g -> {
             if (g.getMessage().contentToString().contains("muteme")) {
-                try {
+                if (checkPermission(g)) {
                     int muteTime = Config.INSTANCE.getMinTime() + new Random().nextInt(Config.INSTANCE.getMaxTime());
                     g.getSender().mute(muteTime);
                     String message = "被禁名称:" + g.getSender().getNick() + "\n被禁时间:" + muteTime + "秒\n解禁时间:" + formatDate(System.currentTimeMillis() + ((long) muteTime * 1000));
                     g.getGroup().sendMessage(message);
-                } catch (Exception exception) {
-                    g.getGroup().sendMessage("出现了一点意外呢~");
-                    exception.printStackTrace();
+                } else {
+                    g.getGroup().sendMessage("可惜我不能禁言呢~");
                 }
             }
             if (g.getMessage().contentToString().contains("我好了")) {
-                try {
+                if (checkPermission(g)) {
                     g.getSender().mute(30);
                     g.getGroup().sendMessage("不许好，憋回去！");
-                } catch (Exception exception) {
-                    g.getGroup().sendMessage("出现了一点意外呢~");
-                    exception.printStackTrace();
+                } else {
+                    g.getGroup().sendMessage("好好好");
                 }
             }
         });
@@ -64,5 +62,9 @@ public final class MuteMe extends JavaPlugin {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy年MM月dd日HH时mm分ss秒");
         Instant instant = Instant.ofEpochMilli(timeStamp);
         return formatter.format(instant.atZone(ZoneId.systemDefault()));
+    }
+
+    boolean checkPermission(@NotNull GroupMessageEvent g) {
+        return g.getSender().getPermission().getLevel() < g.getGroup().getBotPermission().getLevel();
     }
 }
