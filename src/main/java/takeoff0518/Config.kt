@@ -10,5 +10,4 @@ object Config : AutoSavePluginConfig("config") {
 
     @ValueDescription("上界(s)")
     val maxTime: Int by value(600)
-//    var enable: Array<Long> by value()
 }

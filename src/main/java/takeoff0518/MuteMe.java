@@ -19,7 +19,7 @@ public final class MuteMe extends JavaPlugin {
     public static final MuteMe INSTANCE = new MuteMe();
 
     private MuteMe() {
-        super(new JvmPluginDescriptionBuilder("takeoff.muteme", "0.1.2")
+        super(new JvmPluginDescriptionBuilder("takeoff.muteme", "0.2.0")
                 .name("MuteMe")
                 .author("takeoff0518")
                 .build());
@@ -38,7 +38,7 @@ public final class MuteMe extends JavaPlugin {
         eventChannel.subscribeAlways(GroupMessageEvent.class, g -> {
             if (g.getMessage().contentToString().contains("muteme")) {
                 if (checkPermission(g)) {
-                    int muteTime = Config.INSTANCE.getMinTime() + new Random().nextInt(Config.INSTANCE.getMaxTime());
+                    int muteTime = getRandom(Config.INSTANCE.getMinTime(), Config.INSTANCE.getMaxTime());
                     g.getSender().mute(muteTime);
                     String message = "被禁名称:" + g.getSender().getNick() + "\n被禁时间:" + muteTime + "秒\n解禁时间:" + formatDate(System.currentTimeMillis() + ((long) muteTime * 1000));
                     g.getGroup().sendMessage(message);
@@ -66,5 +66,9 @@ public final class MuteMe extends JavaPlugin {
 
     boolean checkPermission(@NotNull GroupMessageEvent g) {
         return g.getSender().getPermission().getLevel() < g.getGroup().getBotPermission().getLevel();
+    }
+
+    int getRandom(int lBound, int rBound) {
+        return new Random().nextInt(rBound - lBound + 1) + lBound;
     }
 }
